@@ -1,0 +1,18 @@
+.alert {
+  border-radius: 8px;
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  font-weight: 650;
+}
+
+.alert.error {
+  border: 1px solid #f2b8b5;
+  background: #fff1ef;
+  color: #9b2c22;
+}
+
+.alert.info {
+  border: 1px solid #b9dddb;
+  background: #eefbf8;
+  color: #11645d;
+}

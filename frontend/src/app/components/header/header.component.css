@@ -1,0 +1,43 @@
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+h1,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(1.85rem, 3vw, 2.55rem);
+  font-weight: 760;
+  letter-spacing: 0;
+}
+
+.eyebrow {
+  color: #607075;
+  font-size: 0.74rem;
+  font-weight: 760;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ghost-button {
+  min-height: 40px;
+  border-radius: 8px;
+  border: 1px solid #cad5d6;
+  background: #ffffff;
+  color: #223135;
+  padding: 0 14px;
+  font-weight: 760;
+}
+
+@media (max-width: 820px) {
+  .topbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

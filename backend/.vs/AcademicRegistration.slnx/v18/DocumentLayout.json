@@ -1,0 +1,83 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\julio\\OneDrive\\Documents\\Interrapidisimo\\AcademicRegistration\\backend\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{B782F441-0E86-41D9-A63E-8CCB1594263E}|src\\AcademicRegistration.Api\\AcademicRegistration.Api.csproj|c:\\users\\julio\\onedrive\\documents\\interrapidisimo\\academicregistration\\backend\\src\\academicregistration.api\\middlewares\\exceptionhandlingmiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B782F441-0E86-41D9-A63E-8CCB1594263E}|src\\AcademicRegistration.Api\\AcademicRegistration.Api.csproj|solutionrelative:src\\academicregistration.api\\middlewares\\exceptionhandlingmiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5BDCC0EB-7A97-F02C-4FE3-6F565C330C10}|src\\AcademicRegistration.Infrastructure\\AcademicRegistration.Infrastructure.csproj|c:\\users\\julio\\onedrive\\documents\\interrapidisimo\\academicregistration\\backend\\src\\academicregistration.infrastructure\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5BDCC0EB-7A97-F02C-4FE3-6F565C330C10}|src\\AcademicRegistration.Infrastructure\\AcademicRegistration.Infrastructure.csproj|solutionrelative:src\\academicregistration.infrastructure\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B782F441-0E86-41D9-A63E-8CCB1594263E}|src\\AcademicRegistration.Api\\AcademicRegistration.Api.csproj|c:\\users\\julio\\onedrive\\documents\\interrapidisimo\\academicregistration\\backend\\src\\academicregistration.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{B782F441-0E86-41D9-A63E-8CCB1594263E}|src\\AcademicRegistration.Api\\AcademicRegistration.Api.csproj|solutionrelative:src\\academicregistration.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ExceptionHandlingMiddleware.cs",
+              "DocumentMoniker": "C:\\Users\\julio\\OneDrive\\Documents\\Interrapidisimo\\AcademicRegistration\\backend\\src\\AcademicRegistration.Api\\Middlewares\\ExceptionHandlingMiddleware.cs",
+              "RelativeDocumentMoniker": "src\\AcademicRegistration.Api\\Middlewares\\ExceptionHandlingMiddleware.cs",
+              "ToolTip": "C:\\Users\\julio\\OneDrive\\Documents\\Interrapidisimo\\AcademicRegistration\\backend\\src\\AcademicRegistration.Api\\Middlewares\\ExceptionHandlingMiddleware.cs",
+              "RelativeToolTip": "src\\AcademicRegistration.Api\\Middlewares\\ExceptionHandlingMiddleware.cs",
+              "ViewState": "AgIAABIAAAAAAAAAAAAYwDQAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-05T21:40:08.839Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "DependencyInjection.cs",
+              "DocumentMoniker": "C:\\Users\\julio\\OneDrive\\Documents\\Interrapidisimo\\AcademicRegistration\\backend\\src\\AcademicRegistration.Infrastructure\\DependencyInjection.cs",
+              "RelativeDocumentMoniker": "src\\AcademicRegistration.Infrastructure\\DependencyInjection.cs",
+              "ToolTip": "C:\\Users\\julio\\OneDrive\\Documents\\Interrapidisimo\\AcademicRegistration\\backend\\src\\AcademicRegistration.Infrastructure\\DependencyInjection.cs",
+              "RelativeToolTip": "src\\AcademicRegistration.Infrastructure\\DependencyInjection.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-05T21:35:19.887Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\julio\\OneDrive\\Documents\\Interrapidisimo\\AcademicRegistration\\backend\\src\\AcademicRegistration.Api\\appsettings.json",
+              "RelativeDocumentMoniker": "src\\AcademicRegistration.Api\\appsettings.json",
+              "ToolTip": "C:\\Users\\julio\\OneDrive\\Documents\\Interrapidisimo\\AcademicRegistration\\backend\\src\\AcademicRegistration.Api\\appsettings.json",
+              "RelativeToolTip": "src\\AcademicRegistration.Api\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-07-05T21:32:19.77Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

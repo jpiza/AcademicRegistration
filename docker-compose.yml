@@ -1,0 +1,86 @@
+name: academic-registration
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: academic-registration-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Express
+      MSSQL_SA_PASSWORD: ${SQLSERVER_SA_PASSWORD:-AcademicReg!2026}
+    ports:
+      - "${SQLSERVER_PORT:-1433}:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$${MSSQL_SA_PASSWORD}\" -C -Q \"SELECT 1\" || /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P \"$${MSSQL_SA_PASSWORD}\" -Q \"SELECT 1\""
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    networks:
+      - academic-registration-network
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.api
+    container_name: academic-registration-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:5081
+      Configuracion__Conexion: SQL
+      Configuracion__CadenasConexion__ConexionSQL: Server=sqlserver,1433;Database=AcademicRegistrationDb;User Id=sa;Password=${SQLSERVER_SA_PASSWORD:-AcademicReg!2026};TrustServerCertificate=True;MultipleActiveResultSets=true
+      Cors__AllowedOrigins__0: http://localhost:${FRONTEND_PORT:-4200}
+      Cors__AllowedOrigins__1: http://localhost:${GATEWAY_PORT:-5080}
+    ports:
+      - "${API_PORT:-5081}:5081"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    networks:
+      - academic-registration-network
+    restart: unless-stopped
+
+  gateway:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.gateway
+    container_name: academic-registration-gateway
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:5080
+      Cors__AllowedOrigins__0: http://localhost:${FRONTEND_PORT:-4200}
+      ReverseProxy__Clusters__academic-registration-api__Destinations__api__Address: http://api:5081/
+    ports:
+      - "${GATEWAY_PORT:-5080}:5080"
+    depends_on:
+      - api
+    networks:
+      - academic-registration-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: academic-registration-frontend
+    ports:
+      - "${FRONTEND_PORT:-4200}:80"
+    depends_on:
+      - gateway
+    networks:
+      - academic-registration-network
+    restart: unless-stopped
+
+networks:
+  academic-registration-network:
+    driver: bridge
+
+volumes:
+  sqlserver-data:

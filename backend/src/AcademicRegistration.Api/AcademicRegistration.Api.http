@@ -1,0 +1,22 @@
+@AcademicRegistration.Api_HostAddress = http://localhost:5081
+
+GET {{AcademicRegistration.Api_HostAddress}}/api/subjects
+Accept: application/json
+
+###
+
+POST {{AcademicRegistration.Api_HostAddress}}/api/students
+Content-Type: application/json
+
+{
+  "name": "Julio Prueba",
+  "email": "julio.prueba@example.com",
+  "documentNumber": "CC-12345",
+  "subjectIds": [
+    "20000000-0000-0000-0000-000000000001",
+    "20000000-0000-0000-0000-000000000003",
+    "20000000-0000-0000-0000-000000000005"
+  ]
+}
+
+###

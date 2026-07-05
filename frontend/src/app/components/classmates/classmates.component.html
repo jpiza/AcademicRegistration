@@ -1,0 +1,33 @@
+<section class="panel classmates-panel">
+  <div class="panel-header">
+    <div>
+      <p class="eyebrow">Compañeros</p>
+      <h2>{{ activeStudent()?.name || 'Selecciona un estudiante' }}</h2>
+    </div>
+  </div>
+
+  @if (!activeStudentId()) {
+    <div class="empty-state">Selecciona un registro para ver companeros por materia.</div>
+  } @else {
+    <div class="classmate-list">
+      @for (group of classmates(); track group.subjectId) {
+        <article class="classmate-row">
+          <div>
+            <strong>{{ group.subjectName }}</strong>
+            <span>{{ group.professorName }}</span>
+          </div>
+
+          @if (group.classmateNames.length === 0) {
+            <small>Sin companeros registrados.</small>
+          } @else {
+            <ul>
+              @for (classmate of group.classmateNames; track classmate) {
+                <li>{{ classmate }}</li>
+              }
+            </ul>
+          }
+        </article>
+      }
+    </div>
+  }
+</section>

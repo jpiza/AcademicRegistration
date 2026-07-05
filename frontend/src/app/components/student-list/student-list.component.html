@@ -1,0 +1,38 @@
+<section class="panel roster-panel">
+  <div class="panel-header">
+    <div>
+      <p class="eyebrow">Registros</p>
+      <h2>Estudiantes en linea</h2>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="empty-state">Cargando registros...</div>
+  } @else if (students().length === 0) {
+    <div class="empty-state">Aun no hay estudiantes registrados.</div>
+  } @else {
+    <div class="student-list">
+      @for (student of students(); track student.id) {
+        <article class="student-row" [class.active]="activeStudentId() === student.id">
+          <div class="student-main">
+            <strong>{{ student.name }}</strong>
+            <span>{{ student.email }}</span>
+            <small>{{ student.documentNumber }} - {{ student.totalCredits }} creditos</small>
+          </div>
+
+          <div class="chips">
+            @for (subject of student.subjects; track subject.subjectId) {
+              <span>{{ subject.code }}</span>
+            }
+          </div>
+
+          <div class="row-actions">
+            <button type="button" class="ghost-button compact" (click)="viewClassmates.emit(student.id)">Ver</button>
+            <button type="button" class="ghost-button compact" (click)="editStudent.emit(student)">Editar</button>
+            <button type="button" class="danger-button compact" (click)="deleteStudent.emit(student)">Eliminar</button>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>

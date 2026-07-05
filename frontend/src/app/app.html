@@ -1,0 +1,42 @@
+<main class="shell">
+  <app-header [loading]="store.loading()" (refresh)="store.loadInitial()" />
+
+  <app-metrics
+    [studentCount]="store.students().length"
+    [subjectCount]="store.subjects().length"
+    [professorCount]="store.professorCount()"
+    [registrationCount]="store.registrationCount()" />
+
+  @if (store.error(); as error) {
+    <app-alert [message]="error" type="error" />
+  }
+
+  @if (statusMessage(); as message) {
+    <app-alert [message]="message" type="info" />
+  }
+
+  <section class="workspace">
+    <app-student-form
+      [subjects]="store.subjects()"
+      [editing]="!!editingStudentId()"
+      [saving]="store.saving()"
+      [studentData]="editingStudentData()"
+      [(selectedSubjectIds)]="selectedSubjectIds"
+      [(statusMessage)]="statusMessage"
+      (submitForm)="handleFormSubmit($event)"
+      (resetForm)="resetForm()" />
+
+    <app-student-list
+      [students]="store.students()"
+      [loading]="store.loading()"
+      [activeStudentId]="activeStudentId()"
+      (viewClassmates)="viewClassmates($event)"
+      (editStudent)="editStudent($event)"
+      (deleteStudent)="deleteStudent($event)" />
+
+    <app-classmates
+      [classmates]="store.classmates()"
+      [students]="store.students()"
+      [activeStudentId]="activeStudentId()" />
+  </section>
+</main>

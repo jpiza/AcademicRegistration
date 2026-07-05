@@ -1,0 +1,54 @@
+<form class="panel form-panel" [formGroup]="form" (ngSubmit)="submit()">
+  <div class="panel-header">
+    <div>
+      <p class="eyebrow">Estudiante</p>
+      <h2>{{ editing() ? 'Editar registro' : 'Nuevo registro' }}</h2>
+    </div>
+    <button class="ghost-button compact" type="button" (click)="reset()">Limpiar</button>
+  </div>
+
+  <div class="form-grid">
+    <label>
+      <span>Nombre completo</span>
+      <input type="text" formControlName="name" autocomplete="name" placeholder="Nombre del estudiante">
+    </label>
+
+    <label>
+      <span>Correo</span>
+      <input type="email" formControlName="email" autocomplete="email" placeholder="correo@dominio.com">
+    </label>
+
+    <label>
+      <span>Documento</span>
+      <input type="text" formControlName="documentNumber" autocomplete="off" placeholder="CC-12345">
+    </label>
+  </div>
+
+  <div class="selection-bar">
+    <div>
+      <span>{{ selectedSubjectIds().length }}/3 materias</span>
+      <strong>{{ totalCredits() }} creditos</strong>
+    </div>
+    <small>Sin repetir profesor</small>
+  </div>
+
+  <div class="subject-grid">
+    @for (subject of subjects(); track subject.id) {
+      <button
+        type="button"
+        class="subject-tile"
+        [class.selected]="isSelected(subject.id)"
+        [class.blocked]="isBlocked(subject)"
+        (click)="toggleSubject(subject)">
+        <span class="subject-code">{{ subject.code }}</span>
+        <strong>{{ subject.name }}</strong>
+        <span>{{ subject.professorName }}</span>
+        <em>{{ subjectStateLabel(subject) }}</em>
+      </button>
+    }
+  </div>
+
+  <button class="primary-button" type="submit" [disabled]="!canSubmit()">
+    {{ editing() ? 'Guardar cambios' : 'Registrar estudiante' }}
+  </button>
+</form>

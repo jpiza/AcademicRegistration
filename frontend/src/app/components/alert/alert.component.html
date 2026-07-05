@@ -1,0 +1,3 @@
+@if (message()) {
+  <p class="alert" [class.error]="type() === 'error'" [class.info]="type() === 'info'">{{ message() }}</p>
+}
