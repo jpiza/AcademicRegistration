@@ -1,10 +1,10 @@
-using AcademicRegistration.Api.Contracts;
 using AcademicRegistration.Application.Students.Commands.CreateStudent;
 using AcademicRegistration.Application.Students.Commands.DeleteStudent;
 using AcademicRegistration.Application.Students.Commands.UpdateStudent;
 using AcademicRegistration.Application.Students.Queries.GetStudentById;
 using AcademicRegistration.Application.Students.Queries.GetStudentClassmates;
 using AcademicRegistration.Application.Students.Queries.GetStudents;
+using ErrorOr;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -42,11 +42,9 @@ public sealed class StudentsController : ApiController
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateStudentRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Create([FromBody] CreateStudentCommand command, CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(
-            new CreateStudentCommand(request.Name, request.Email, request.DocumentNumber, request.SubjectIds),
-            cancellationToken);
+        var result = await _sender.Send(command, cancellationToken);
 
         return Match(
             result,
@@ -56,12 +54,20 @@ public sealed class StudentsController : ApiController
     [HttpPut("{studentId:guid}")]
     public async Task<IActionResult> Update(
         Guid studentId,
-        UpdateStudentRequest request,
+        [FromBody] UpdateStudentCommand command,
         CancellationToken cancellationToken)
     {
-        var result = await _sender.Send(
-            new UpdateStudentCommand(studentId, request.Name, request.Email, request.DocumentNumber, request.SubjectIds),
-            cancellationToken);
+        if (command.StudentId != studentId)
+        {
+            return ProblemFromErrors(new List<Error>
+            {
+                Error.Validation(
+                    "Student.UpdateInvalid",
+                    "El id de la solicitud no coincide con el id de la URL.")
+            });
+        }
+
+        var result = await _sender.Send(command, cancellationToken);
 
         return Match(result, _ => NoContent());
     }

@@ -43,3 +43,7 @@ export interface SaveStudentRequest {
   documentNumber: string;
   subjectIds: string[];
 }
+
+export interface UpdateStudentRequest extends SaveStudentRequest {
+  studentId: string;
+}

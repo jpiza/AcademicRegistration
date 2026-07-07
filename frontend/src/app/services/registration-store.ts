@@ -6,7 +6,8 @@ import {
   ClassmatesBySubject,
   SaveStudentRequest,
   StudentSummary,
-  Subject
+  Subject,
+  UpdateStudentRequest
 } from '../models/registration.models';
 
 @Injectable({ providedIn: 'root' })
@@ -85,7 +86,12 @@ export class RegistrationStore {
     this.errorState.set(null);
 
     try {
-      await firstValueFrom(this.http.put<void>(`${this.apiUrl}/students/${studentId}`, request));
+      const command: UpdateStudentRequest = {
+        ...request,
+        studentId
+      };
+
+      await firstValueFrom(this.http.put<void>(`${this.apiUrl}/students/${studentId}`, command));
       await this.refreshStudents();
       
       // Recargar compañeros si el estudiante actualizado es el activo
