@@ -3,6 +3,26 @@
   "WorkspaceRootPath": "C:\\Users\\julio\\OneDrive\\Documents\\Interrapidisimo\\AcademicRegistration\\backend\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{01FC6B79-0234-1FD8-42BB-8E644406A9A6}|src\\AcademicRegistration.Application\\AcademicRegistration.Application.csproj|c:\\users\\julio\\onedrive\\documents\\interrapidisimo\\academicregistration\\backend\\src\\academicregistration.application\\integrationevents\\students\\studentnotificationrequestedintegrationevent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{01FC6B79-0234-1FD8-42BB-8E644406A9A6}|src\\AcademicRegistration.Application\\AcademicRegistration.Application.csproj|solutionrelative:src\\academicregistration.application\\integrationevents\\students\\studentnotificationrequestedintegrationevent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{01FC6B79-0234-1FD8-42BB-8E644406A9A6}|src\\AcademicRegistration.Application\\AcademicRegistration.Application.csproj|c:\\users\\julio\\onedrive\\documents\\interrapidisimo\\academicregistration\\backend\\src\\academicregistration.application\\integrationevents\\students\\studentnotificationsubject.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{01FC6B79-0234-1FD8-42BB-8E644406A9A6}|src\\AcademicRegistration.Application\\AcademicRegistration.Application.csproj|solutionrelative:src\\academicregistration.application\\integrationevents\\students\\studentnotificationsubject.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{01FC6B79-0234-1FD8-42BB-8E644406A9A6}|src\\AcademicRegistration.Application\\AcademicRegistration.Application.csproj|c:\\users\\julio\\onedrive\\documents\\interrapidisimo\\academicregistration\\backend\\src\\academicregistration.application\\integrationevents\\students\\studentnotificationeventtypes.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{01FC6B79-0234-1FD8-42BB-8E644406A9A6}|src\\AcademicRegistration.Application\\AcademicRegistration.Application.csproj|solutionrelative:src\\academicregistration.application\\integrationevents\\students\\studentnotificationeventtypes.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{01FC6B79-0234-1FD8-42BB-8E644406A9A6}|src\\AcademicRegistration.Application\\AcademicRegistration.Application.csproj|c:\\users\\julio\\onedrive\\documents\\interrapidisimo\\academicregistration\\backend\\src\\academicregistration.application\\students\\events\\publishstudentregisteredeventhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{01FC6B79-0234-1FD8-42BB-8E644406A9A6}|src\\AcademicRegistration.Application\\AcademicRegistration.Application.csproj|solutionrelative:src\\academicregistration.application\\students\\events\\publishstudentregisteredeventhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6C65E136-B25F-061E-2EA3-553D9A831113}|src\\AcademicRegistration.Domain\\AcademicRegistration.Domain.csproj|c:\\users\\julio\\onedrive\\documents\\interrapidisimo\\academicregistration\\backend\\src\\academicregistration.domain\\primitives\\aggregateroot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6C65E136-B25F-061E-2EA3-553D9A831113}|src\\AcademicRegistration.Domain\\AcademicRegistration.Domain.csproj|solutionrelative:src\\academicregistration.domain\\primitives\\aggregateroot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{01FC6B79-0234-1FD8-42BB-8E644406A9A6}|src\\AcademicRegistration.Application\\AcademicRegistration.Application.csproj|c:\\users\\julio\\onedrive\\documents\\interrapidisimo\\academicregistration\\backend\\src\\academicregistration.application\\abstractions\\events\\ieventbus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{01FC6B79-0234-1FD8-42BB-8E644406A9A6}|src\\AcademicRegistration.Application\\AcademicRegistration.Application.csproj|solutionrelative:src\\academicregistration.application\\abstractions\\events\\ieventbus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -13,10 +33,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{01FC6B79-0234-1FD8-42BB-8E644406A9A6}|src\\AcademicRegistration.Application\\AcademicRegistration.Application.csproj|c:\\users\\julio\\onedrive\\documents\\interrapidisimo\\academicregistration\\backend\\src\\academicregistration.application\\abstractions\\messaging\\icommand.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{01FC6B79-0234-1FD8-42BB-8E644406A9A6}|src\\AcademicRegistration.Application\\AcademicRegistration.Application.csproj|solutionrelative:src\\academicregistration.application\\abstractions\\messaging\\icommand.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{01FC6B79-0234-1FD8-42BB-8E644406A9A6}|src\\AcademicRegistration.Application\\AcademicRegistration.Application.csproj|c:\\users\\julio\\onedrive\\documents\\interrapidisimo\\academicregistration\\backend\\src\\academicregistration.application\\students\\events\\publishstudentregisteredeventhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{01FC6B79-0234-1FD8-42BB-8E644406A9A6}|src\\AcademicRegistration.Application\\AcademicRegistration.Application.csproj|solutionrelative:src\\academicregistration.application\\students\\events\\publishstudentregisteredeventhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,11 +42,63 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "StudentNotificationSubject.cs",
+              "DocumentMoniker": "C:\\Users\\julio\\OneDrive\\Documents\\Interrapidisimo\\AcademicRegistration\\backend\\src\\AcademicRegistration.Application\\IntegrationEvents\\Students\\StudentNotificationSubject.cs",
+              "RelativeDocumentMoniker": "src\\AcademicRegistration.Application\\IntegrationEvents\\Students\\StudentNotificationSubject.cs",
+              "ToolTip": "C:\\Users\\julio\\OneDrive\\Documents\\Interrapidisimo\\AcademicRegistration\\backend\\src\\AcademicRegistration.Application\\IntegrationEvents\\Students\\StudentNotificationSubject.cs",
+              "RelativeToolTip": "src\\AcademicRegistration.Application\\IntegrationEvents\\Students\\StudentNotificationSubject.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-08T01:44:07.718Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "StudentNotificationRequestedIntegrationEvent.cs",
+              "DocumentMoniker": "C:\\Users\\julio\\OneDrive\\Documents\\Interrapidisimo\\AcademicRegistration\\backend\\src\\AcademicRegistration.Application\\IntegrationEvents\\Students\\StudentNotificationRequestedIntegrationEvent.cs",
+              "RelativeDocumentMoniker": "src\\AcademicRegistration.Application\\IntegrationEvents\\Students\\StudentNotificationRequestedIntegrationEvent.cs",
+              "ToolTip": "C:\\Users\\julio\\OneDrive\\Documents\\Interrapidisimo\\AcademicRegistration\\backend\\src\\AcademicRegistration.Application\\IntegrationEvents\\Students\\StudentNotificationRequestedIntegrationEvent.cs",
+              "RelativeToolTip": "src\\AcademicRegistration.Application\\IntegrationEvents\\Students\\StudentNotificationRequestedIntegrationEvent.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-08T01:43:08.949Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "StudentNotificationEventTypes.cs",
+              "DocumentMoniker": "C:\\Users\\julio\\OneDrive\\Documents\\Interrapidisimo\\AcademicRegistration\\backend\\src\\AcademicRegistration.Application\\IntegrationEvents\\Students\\StudentNotificationEventTypes.cs",
+              "RelativeDocumentMoniker": "src\\AcademicRegistration.Application\\IntegrationEvents\\Students\\StudentNotificationEventTypes.cs",
+              "ToolTip": "C:\\Users\\julio\\OneDrive\\Documents\\Interrapidisimo\\AcademicRegistration\\backend\\src\\AcademicRegistration.Application\\IntegrationEvents\\Students\\StudentNotificationEventTypes.cs",
+              "RelativeToolTip": "src\\AcademicRegistration.Application\\IntegrationEvents\\Students\\StudentNotificationEventTypes.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-08T01:43:55.831Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "AggregateRoot.cs",
+              "DocumentMoniker": "C:\\Users\\julio\\OneDrive\\Documents\\Interrapidisimo\\AcademicRegistration\\backend\\src\\AcademicRegistration.Domain\\Primitives\\AggregateRoot.cs",
+              "RelativeDocumentMoniker": "src\\AcademicRegistration.Domain\\Primitives\\AggregateRoot.cs",
+              "ToolTip": "C:\\Users\\julio\\OneDrive\\Documents\\Interrapidisimo\\AcademicRegistration\\backend\\src\\AcademicRegistration.Domain\\Primitives\\AggregateRoot.cs",
+              "RelativeToolTip": "src\\AcademicRegistration.Domain\\Primitives\\AggregateRoot.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-08T01:42:03.022Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "TransactionBehavior.cs",
               "DocumentMoniker": "C:\\Users\\julio\\OneDrive\\Documents\\Interrapidisimo\\AcademicRegistration\\backend\\src\\AcademicRegistration.Application\\Common\\Behaviors\\TransactionBehavior.cs",
               "RelativeDocumentMoniker": "src\\AcademicRegistration.Application\\Common\\Behaviors\\TransactionBehavior.cs",
@@ -43,7 +111,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 7,
               "Title": "ICommand.cs",
               "DocumentMoniker": "C:\\Users\\julio\\OneDrive\\Documents\\Interrapidisimo\\AcademicRegistration\\backend\\src\\AcademicRegistration.Application\\Abstractions\\Messaging\\ICommand.cs",
               "RelativeDocumentMoniker": "src\\AcademicRegistration.Application\\Abstractions\\Messaging\\ICommand.cs",
@@ -56,7 +124,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 5,
               "Title": "IEventBus.cs",
               "DocumentMoniker": "C:\\Users\\julio\\OneDrive\\Documents\\Interrapidisimo\\AcademicRegistration\\backend\\src\\AcademicRegistration.Application\\Abstractions\\Events\\IEventBus.cs",
               "RelativeDocumentMoniker": "src\\AcademicRegistration.Application\\Abstractions\\Events\\IEventBus.cs",
@@ -87,7 +155,7 @@
               "RelativeDocumentMoniker": "src\\AcademicRegistration.Application\\Students\\Events\\PublishStudentRegisteredEventHandler.cs",
               "ToolTip": "C:\\Users\\julio\\OneDrive\\Documents\\Interrapidisimo\\AcademicRegistration\\backend\\src\\AcademicRegistration.Application\\Students\\Events\\PublishStudentRegisteredEventHandler.cs",
               "RelativeToolTip": "src\\AcademicRegistration.Application\\Students\\Events\\PublishStudentRegisteredEventHandler.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACIAAAAgAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAABPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-07-08T01:27:58.464Z",
               "EditorCaption": ""
