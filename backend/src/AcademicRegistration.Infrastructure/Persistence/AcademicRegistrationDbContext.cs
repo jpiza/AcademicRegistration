@@ -1,5 +1,6 @@
 using AcademicRegistration.Domain.Entities;
 using AcademicRegistration.Domain.Primitives;
+using AcademicRegistration.Infrastructure.Outbox;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +22,8 @@ public sealed class AcademicRegistrationDbContext : DbContext, IUnitOfWork
 
     public DbSet<Professor> Professors => Set<Professor>();
 
+    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AcademicRegistrationDbContext).Assembly);
@@ -38,14 +41,14 @@ public sealed class AcademicRegistrationDbContext : DbContext, IUnitOfWork
             .SelectMany(entity => entity.GetDomainEvents())
             .ToList();
 
-        var result = await base.SaveChangesAsync(cancellationToken);
-
-        aggregates.ForEach(entity => entity.ClearDomainEvents());
-
         foreach (var domainEvent in domainEvents)
         {
             await _publisher.Publish(domainEvent, cancellationToken);
         }
+
+        var result = await base.SaveChangesAsync(cancellationToken);
+
+        aggregates.ForEach(entity => entity.ClearDomainEvents());
 
         return result;
     }

@@ -7,6 +7,7 @@
     <Project Path="src/AcademicRegistration.Infrastructure/AcademicRegistration.Infrastructure.csproj" />
     <Project Path="src/AcademicRegistration.Infrastructure.Migrations.MySql/AcademicRegistration.Infrastructure.Migrations.MySql.csproj" />
     <Project Path="src/AcademicRegistration.Infrastructure.Migrations.SqlServer/AcademicRegistration.Infrastructure.Migrations.SqlServer.csproj" />
+    <Project Path="src/AcademicRegistration.Notifications.Worker/AcademicRegistration.Notifications.Worker.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/AcademicRegistration.Application.Tests/AcademicRegistration.Application.Tests.csproj" />

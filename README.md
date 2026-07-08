@@ -22,6 +22,7 @@ Solucion para la prueba tecnica de registro de estudiantes.
 - `backend/src/AcademicRegistration.Infrastructure.Migrations.SqlServer`: migraciones EF Core para SQL Server.
 - `backend/src/AcademicRegistration.Api`: API REST con controllers y manejo de errores.
 - `backend/src/AcademicRegistration.Gateway`: API gateway con YARP hacia el API.
+- `backend/src/AcademicRegistration.Notifications.Worker`: consumidor Kafka para notificaciones por correo.
 - `frontend`: Angular 22 standalone/zoneless con signals.
 - `database`: scripts SQL Server y MySQL.
 
@@ -40,6 +41,7 @@ Ejecutar API y gateway:
 ```powershell
 dotnet run --project .\backend\src\AcademicRegistration.Api\AcademicRegistration.Api.csproj
 dotnet run --project .\backend\src\AcademicRegistration.Gateway\AcademicRegistration.Gateway.csproj
+dotnet run --project .\backend\src\AcademicRegistration.Notifications.Worker\AcademicRegistration.Notifications.Worker.csproj
 ```
 
 URLs por defecto:
@@ -47,6 +49,56 @@ URLs por defecto:
 - API: `http://localhost:5081`
 - Swagger API: `http://localhost:5081/swagger`
 - Gateway: `http://localhost:5080`
+
+### Eventos y notificaciones
+
+El agregado `Student` levanta `StudentRegisteredEvent` al registrar un estudiante y `StudentEnrollmentChangedEvent` al actualizar su seleccion de materias. La capa Application los traduce a `StudentNotificationRequestedIntegrationEvent`.
+
+Para mantener consistencia entre la base de datos y Kafka, el API usa el patron transactional outbox:
+
+1. El comando modifica el estudiante y levanta eventos de dominio.
+2. Antes de guardar, MediatR maneja esos eventos y `IEventBus` inserta el mensaje en `OutboxMessages`.
+3. `Students`, `StudentSubjects` y `OutboxMessages` se guardan en la misma transaccion de EF Core.
+4. `OutboxMessageProcessor` lee mensajes pendientes, los publica en Kafka y marca `ProcessedOnUtc`.
+5. Si Kafka falla, el mensaje queda con `Error` y `RetryCount` para reintento.
+
+Esto evita perder mensajes cuando la base de datos confirma el cambio pero Kafka no esta disponible. La contraparte es que Kafka puede recibir un duplicado si el API publica y se cae antes de marcar el outbox como procesado; por eso los consumidores deben tratar `eventId` como llave de idempotencia.
+
+La configuracion Kafka del publicador esta en:
+
+```json
+"Kafka": {
+  "BootstrapServers": "localhost:9092",
+  "Topic": "academic-registration-events"
+}
+```
+
+El procesador outbox se controla con:
+
+```json
+"Outbox": {
+  "BatchSize": 20,
+  "PollingIntervalSeconds": 5,
+  "MaxRetries": 0
+}
+```
+
+`MaxRetries = 0` significa reintentos indefinidos.
+
+El worker `AcademicRegistration.Notifications.Worker` consume ese topico con el grupo `academic-registration-notifications` y envia la notificacion por correo. Por defecto `Email:Enabled` es `false`, asi que el correo se simula en logs; para envio real configura SMTP con `Email__Enabled=true`, `Email__Host`, `Email__Port`, `Email__From`, `Email__UserName` y `Email__Password`.
+
+Para Gmail, usa una contrasena de aplicacion, no la contrasena normal de la cuenta:
+
+```powershell
+$env:Email__Enabled = "true"
+$env:Email__Host = "smtp.gmail.com"
+$env:Email__Port = "587"
+$env:Email__EnableSsl = "true"
+$env:Email__From = "tu-correo@gmail.com"
+$env:Email__UserName = "tu-correo@gmail.com"
+$env:Email__Password = "tu-contrasena-de-aplicacion"
+dotnet run --project .\backend\src\AcademicRegistration.Notifications.Worker\AcademicRegistration.Notifications.Worker.csproj
+```
 
 ### Proveedor de base de datos
 
@@ -209,12 +261,14 @@ Angular usa proxy local para enviar `/api` al gateway `http://localhost:5080`.
 
 ## Docker
 
-La configuracion Docker levanta cuatro servicios:
+La configuracion Docker levanta seis servicios:
 
 - `frontend`: Angular compilado y servido con Nginx en `http://localhost:4200`.
 - `gateway`: API Gateway YARP en `http://localhost:5080`.
 - `api`: API REST en `http://localhost:5081` y Swagger en `http://localhost:5081/swagger`.
 - `sqlserver`: SQL Server 2022 Express con volumen persistente.
+- `kafka`: broker Kafka local en `localhost:19092`.
+- `notifications-worker`: consumidor del topico `academic-registration-events` para enviar correos.
 
 Crear el archivo de entorno:
 
@@ -235,6 +289,7 @@ URLs principales:
 - API: `http://localhost:5081`
 - Swagger: `http://localhost:5081/swagger`
 - SQL Server: `localhost,1433`
+- Kafka: `localhost:19092`
 
 Credenciales por defecto de SQL Server:
 
@@ -245,6 +300,8 @@ Base de datos: AcademicRegistrationDb
 ```
 
 El servicio `api` corre con `ASPNETCORE_ENVIRONMENT=Development` y `Configuracion__Conexion=SQL`, por lo que aplica las migraciones de SQL Server y siembra el catalogo de profesores y materias.
+
+El servicio `notifications-worker` queda con `EMAIL_ENABLED=false` por defecto. Con ese valor, veras el contenido del correo en los logs del contenedor. Para enviar correos reales, actualiza las variables SMTP en `.env`. Si usas Gmail, `EMAIL_PASSWORD` debe ser una contrasena de aplicacion.
 
 Para reiniciar tambien la base de datos:
 

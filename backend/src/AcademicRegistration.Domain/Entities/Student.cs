@@ -49,7 +49,11 @@ public sealed class Student : AggregateRoot
         var student = new Student(Guid.NewGuid(), name, email, documentNumber);
 
         student.ChangeEnrollment(selectedSubjects, raiseEvent: false);
-        student.Raise(new StudentRegisteredEvent(student.Id, student.Name.Value, student.Email.Value));
+        student.Raise(new StudentRegisteredEvent(
+            student.Id,
+            student.Name.Value,
+            student.Email.Value,
+            ToEnrollmentSubjects(selectedSubjects)));
 
         return student;
     }
@@ -82,8 +86,23 @@ public sealed class Student : AggregateRoot
 
         if (raiseEvent)
         {
-            Raise(new StudentEnrollmentChangedEvent(Id, selectedSubjects.Select(subject => subject.Id).ToArray()));
+            Raise(new StudentEnrollmentChangedEvent(
+                Id,
+                Name.Value,
+                Email.Value,
+                ToEnrollmentSubjects(selectedSubjects)));
         }
+    }
+
+    private static IReadOnlyCollection<StudentEnrollmentSubject> ToEnrollmentSubjects(
+        IReadOnlyCollection<Subject> subjects)
+    {
+        return subjects
+            .Select(subject => new StudentEnrollmentSubject(
+                subject.Id,
+                subject.Code.Value,
+                subject.Name))
+            .ToArray();
     }
 
     private static void ValidateSelection(IReadOnlyCollection<Subject> selectedSubjects)

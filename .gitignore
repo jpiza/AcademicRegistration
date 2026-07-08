@@ -6,4 +6,7 @@ frontend/.angular/
 frontend/.npm-cache/
 .run/
 *.user
-/backend/.vs
+*.v2
+*.vsidx
+/backend/.vs/
+*.bin

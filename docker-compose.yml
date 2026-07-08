@@ -26,22 +26,86 @@ services:
       - academic-registration-network
     restart: unless-stopped
 
+  kafka:
+    image: apache/kafka:3.9.2
+    container_name: academic-registration-kafka
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://:29092,CONTROLLER://:9093,EXTERNAL://:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,EXTERNAL://localhost:${KAFKA_PORT:-19092}
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+    ports:
+      - "${KAFKA_PORT:-19092}:9092"
+    volumes:
+      - kafka-data:/tmp/kraft-combined-logs
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:29092 --list >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    networks:
+      - academic-registration-network
+    restart: unless-stopped
+
   api:
     build:
       context: ./backend
       dockerfile: Dockerfile.api
     container_name: academic-registration-api
     environment:
-      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:5081
       Configuracion__Conexion: SQL
       Configuracion__CadenasConexion__ConexionSQL: Server=sqlserver,1433;Database=AcademicRegistrationDb;User Id=sa;Password=${SQLSERVER_SA_PASSWORD:-AcademicReg!2026};TrustServerCertificate=True;MultipleActiveResultSets=true
+      Kafka__BootstrapServers: kafka:29092
+      Kafka__Topic: academic-registration-events
+      Outbox__BatchSize: 20
+      Outbox__PollingIntervalSeconds: 5
+      Outbox__MaxRetries: 0
       Cors__AllowedOrigins__0: http://localhost:${FRONTEND_PORT:-4200}
       Cors__AllowedOrigins__1: http://localhost:${GATEWAY_PORT:-5080}
     ports:
       - "${API_PORT:-5081}:5081"
     depends_on:
       sqlserver:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - academic-registration-network
+    restart: unless-stopped
+
+  notifications-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.notifications
+    container_name: academic-registration-notifications-worker
+    environment:
+      DOTNET_ENVIRONMENT: Development
+      Kafka__BootstrapServers: kafka:29092
+      Kafka__Topic: academic-registration-events
+      Kafka__GroupId: academic-registration-notifications
+      Email__Enabled: ${EMAIL_ENABLED:-true}
+      Email__From: ${EMAIL_FROM:-no-reply@academic-registration.local}
+      Email__FromName: ${EMAIL_FROM_NAME:-Academic Registration}
+      Email__Host: ${EMAIL_HOST:-smtp.gmail.com}
+      Email__Port: ${EMAIL_PORT:-587}
+      Email__UserName: ${EMAIL_USERNAME:-juliopizag@gmail.com}
+      Email__Password: ${EMAIL_PASSWORD:-kegk uhef yfhx ebke}
+      Email__EnableSsl: ${EMAIL_ENABLE_SSL:-true}
+      Email__RequireAuthentication: ${EMAIL_REQUIRE_AUTHENTICATION:-true}
+    depends_on:
+      kafka:
         condition: service_healthy
     networks:
       - academic-registration-network
@@ -53,7 +117,7 @@ services:
       dockerfile: Dockerfile.gateway
     container_name: academic-registration-gateway
     environment:
-      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:5080
       Cors__AllowedOrigins__0: http://localhost:${FRONTEND_PORT:-4200}
       ReverseProxy__Clusters__academic-registration-api__Destinations__api__Address: http://api:5081/
@@ -84,3 +148,4 @@ networks:
 
 volumes:
   sqlserver-data:
+  kafka-data:
