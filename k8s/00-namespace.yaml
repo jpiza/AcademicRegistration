@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: academic-registration
+  labels:
+    name: academic-registration
+    app.kubernetes.io/name: academic-registration

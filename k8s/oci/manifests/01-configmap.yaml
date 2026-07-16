@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: academic-registration-config
+  namespace: academic-registration
+  labels:
+    app.kubernetes.io/name: academic-registration
+data:
+  ASPNETCORE_ENVIRONMENT: Development
+  DOTNET_ENVIRONMENT: Development
+  Configuracion__Conexion: MySQL
+  Kafka__BootstrapServers: kafka:29092
+  Kafka__Topic: academic-registration-events
+  Kafka__GroupId: academic-registration-notifications
+  Outbox__BatchSize: "20"
+  Outbox__PollingIntervalSeconds: "5"
+  Outbox__MaxRetries: "0"
+  Cors__AllowedOrigins__0: http://academic-registration.local
+  Cors__AllowedOrigins__1: http://gateway.academic-registration.local
+  Cors__AllowedOrigins__2: http://api.academic-registration.local
+  Email__Enabled: "true"
+  Email__From: no-reply@academic-registration.local
+  Email__FromName: Academic Registration
+  Email__Host: smtp.gmail.com
+  Email__Port: "587"
+  Email__EnableSsl: "true"
+  Email__RequireAuthentication: "true"

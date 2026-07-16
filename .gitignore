@@ -10,3 +10,5 @@ frontend/.npm-cache/
 *.vsidx
 /backend/.vs/
 *.bin
+/.o
+/.tools

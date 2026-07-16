@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notifications-worker
+  namespace: academic-registration
+  labels:
+    app.kubernetes.io/name: academic-registration
+    app.kubernetes.io/component: notifications-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: academic-registration
+      app.kubernetes.io/component: notifications-worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: academic-registration
+        app.kubernetes.io/component: notifications-worker
+    spec:
+      imagePullSecrets:
+        - name: ocir-secret
+      initContainers:
+        - name: wait-for-kafka
+          image: busybox:1.37
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - until nc -z kafka 29092; do echo "waiting for kafka"; sleep 5; done
+      containers:
+        - name: notifications-worker
+          image: ocir.sa-bogota-1.oci.oraclecloud.com/ax8nej0w8huf/academic-registration/notifications:dev
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: academic-registration-config
+          env:
+            - name: Email__UserName
+              valueFrom:
+                secretKeyRef:
+                  name: academic-registration-secrets
+                  key: email-username
+            - name: Email__Password
+              valueFrom:
+                secretKeyRef:
+                  name: academic-registration-secrets
+                  key: email-password
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi

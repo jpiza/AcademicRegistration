@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  namespace: academic-registration
+  labels:
+    app.kubernetes.io/name: academic-registration
+    app.kubernetes.io/component: gateway
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: academic-registration
+      app.kubernetes.io/component: gateway
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: academic-registration
+        app.kubernetes.io/component: gateway
+    spec:
+      initContainers:
+        - name: wait-for-api
+          image: busybox:1.37
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - until nc -z api 5081; do echo "waiting for api"; sleep 5; done
+      containers:
+        - name: gateway
+          image: academic-registration-gateway:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 5080
+          envFrom:
+            - configMapRef:
+                name: academic-registration-config
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:5080
+            - name: ReverseProxy__Clusters__academic-registration-api__Destinations__api__Address
+              value: http://api:5081/
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+  namespace: academic-registration
+  labels:
+    app.kubernetes.io/name: academic-registration
+    app.kubernetes.io/component: gateway
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: academic-registration
+    app.kubernetes.io/component: gateway
+  ports:
+    - name: http
+      protocol: TCP
+      port: 5080
+      targetPort: http

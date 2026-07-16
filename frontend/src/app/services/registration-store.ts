@@ -9,11 +9,16 @@ import {
   Subject,
   UpdateStudentRequest
 } from '../models/registration.models';
+import { AppConfigService } from './app-config.service';
 
 @Injectable({ providedIn: 'root' })
 export class RegistrationStore {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = '/api';
+  private readonly appConfig = inject(AppConfigService);
+
+  private get apiUrl(): string {
+    return this.appConfig.apiBaseUrl;
+  }
 
   private readonly subjectsState = signal<Subject[]>([]);
   private readonly studentsState = signal<StudentSummary[]>([]);
