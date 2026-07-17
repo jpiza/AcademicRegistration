@@ -1,0 +1,59 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: oci-managed-kafka-smoke-test
+  namespace: kafka-poc
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: kafka-cli
+          image: docker.io/apache/kafka:3.9.1
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - secretRef:
+                name: oci-managed-kafka-client
+          command:
+            - /bin/bash
+            - -ec
+          args:
+            - |
+              cat > /tmp/client.properties <<EOF
+              security.protocol=${KAFKA_SECURITY_PROTOCOL:-SASL_SSL}
+              sasl.mechanism=${KAFKA_SASL_MECHANISM:-SCRAM-SHA-512}
+              sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="${KAFKA_USERNAME}" password="${KAFKA_PASSWORD}";
+              EOF
+
+              if [ -n "${KAFKA_SSL_TRUSTSTORE_LOCATION:-}" ]; then
+                {
+                  echo "ssl.truststore.location=${KAFKA_SSL_TRUSTSTORE_LOCATION}"
+                  echo "ssl.truststore.password=${KAFKA_SSL_TRUSTSTORE_PASSWORD}"
+                } >> /tmp/client.properties
+              fi
+
+              TOPIC="${KAFKA_TEST_TOPIC:-poc.oke.heartbeat}"
+              REPLICATION_FACTOR="${KAFKA_TEST_REPLICATION_FACTOR:-3}"
+              PARTITIONS="${KAFKA_TEST_PARTITIONS:-3}"
+
+              /opt/kafka/bin/kafka-topics.sh \
+                --bootstrap-server "${KAFKA_BOOTSTRAP_SERVERS}" \
+                --command-config /tmp/client.properties \
+                --create \
+                --if-not-exists \
+                --topic "${TOPIC}" \
+                --partitions "${PARTITIONS}" \
+                --replication-factor "${REPLICATION_FACTOR}"
+
+              printf 'hello-from-oke %s\n' "$(date -Iseconds)" | /opt/kafka/bin/kafka-console-producer.sh \
+                --bootstrap-server "${KAFKA_BOOTSTRAP_SERVERS}" \
+                --producer.config /tmp/client.properties \
+                --topic "${TOPIC}"
+
+              timeout 30 /opt/kafka/bin/kafka-console-consumer.sh \
+                --bootstrap-server "${KAFKA_BOOTSTRAP_SERVERS}" \
+                --consumer.config /tmp/client.properties \
+                --topic "${TOPIC}" \
+                --from-beginning \
+                --max-messages 1

@@ -9,7 +9,9 @@ data:
   ASPNETCORE_ENVIRONMENT: Development
   DOTNET_ENVIRONMENT: Development
   Configuracion__Conexion: MySQL
-  Kafka__BootstrapServers: kafka:29092
+  Kafka__BootstrapServers: bootstrap-clstr-ufx2qi2chn08ohq4.kafka.sa-bogota-1.oci.oraclecloud.com:9092
+  Kafka__SecurityProtocol: SaslSsl
+  Kafka__SaslMechanism: ScramSha512
   Kafka__Topic: academic-registration-events
   Kafka__GroupId: academic-registration-notifications
   Outbox__BatchSize: "20"
@@ -18,6 +20,7 @@ data:
   Cors__AllowedOrigins__0: http://academic-registration.local
   Cors__AllowedOrigins__1: http://gateway.academic-registration.local
   Cors__AllowedOrigins__2: http://api.academic-registration.local
+  Cors__AllowedOrigins__3: https://objectstorage.sa-bogota-1.oraclecloud.com
   Email__Enabled: "true"
   Email__From: no-reply@academic-registration.local
   Email__FromName: Academic Registration

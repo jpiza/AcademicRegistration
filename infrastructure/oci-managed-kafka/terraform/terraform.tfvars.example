@@ -1,0 +1,38 @@
+region                  = "sa-bogota-1"
+oci_auth                = "SecurityToken"
+oci_config_file_profile = "DEFAULT"
+compartment_id = "ocid1.compartment.oc1..replace"
+
+# Use a private subnet reachable from OKE. For multiple subnets, validate OCI's
+# requirement that each subnet belongs to a different VCN in the same region.
+subnet_ocids = [
+  "ocid1.subnet.oc1..replace"
+]
+
+display_name      = "kafka-poc-oke"
+cluster_type      = "DEVELOPMENT"
+kafka_version     = "3.9.1"
+coordination_type = "ZOOKEEPER"
+
+broker_node_count           = 1
+broker_ocpu_count           = 1
+broker_node_shape           = "VM.Standard.E5.Flex"
+broker_storage_size_in_gbs  = 150
+auto_create_topics_enable   = false
+allow_everyone_if_no_acl_found = true
+
+# Optional: OCI Vault secret created with manual secret generation.
+# The service updates this secret when SASL/SCRAM superuser is enabled.
+enable_sasl_scram_superuser    = true
+create_sasl_scram_secret       = true
+sasl_scram_secret_id           = ""
+sasl_scram_secret_compartment_id = ""
+sasl_scram_vault_name          = "kafka-poc-vault"
+sasl_scram_key_name            = "kafka-poc-key"
+sasl_scram_secret_name         = "kafka-poc-superuser"
+
+freeform_tags = {
+  environment = "poc"
+  owner       = "platform"
+  workload    = "oke-kafka-migration"
+}

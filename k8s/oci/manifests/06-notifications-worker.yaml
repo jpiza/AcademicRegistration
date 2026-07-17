@@ -27,10 +27,10 @@ spec:
           command:
             - sh
             - -c
-            - until nc -z kafka 29092; do echo "waiting for kafka"; sleep 5; done
+            - until nc -z bootstrap-clstr-ufx2qi2chn08ohq4.kafka.sa-bogota-1.oci.oraclecloud.com 9092; do echo "waiting for kafka"; sleep 5; done
       containers:
         - name: notifications-worker
-          image: ocir.sa-bogota-1.oci.oraclecloud.com/ax8nej0w8huf/academic-registration/notifications:dev
+          image: ocir.sa-bogota-1.oci.oraclecloud.com/ax8nej0w8huf/academic-registration/notifications:oci-kafka-sasl-20260716-1957
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
@@ -46,6 +46,16 @@ spec:
                 secretKeyRef:
                   name: academic-registration-secrets
                   key: email-password
+            - name: Kafka__SaslUsername
+              valueFrom:
+                secretKeyRef:
+                  name: oci-managed-kafka-client
+                  key: Kafka__SaslUsername
+            - name: Kafka__SaslPassword
+              valueFrom:
+                secretKeyRef:
+                  name: oci-managed-kafka-client
+                  key: Kafka__SaslPassword
           resources:
             requests:
               cpu: 50m

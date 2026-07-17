@@ -12,3 +12,8 @@ frontend/.npm-cache/
 *.bin
 /.o
 /.tools
+**/.terraform/
+**/*.tfstate
+**/*.tfstate.*
+**/*.tfplan
+**/terraform.tfvars

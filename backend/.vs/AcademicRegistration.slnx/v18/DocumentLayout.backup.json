@@ -74,8 +74,7 @@
               "RelativeToolTip": "src\\AcademicRegistration.Api\\Program.cs",
               "ViewState": "AgIAAAcAAAAAAAAAAAAtwCsAAABCAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-11T01:16:48.175Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-11T01:16:48.175Z"
             },
             {
               "$type": "Document",
@@ -87,8 +86,7 @@
               "RelativeToolTip": "src\\AcademicRegistration.Infrastructure\\Persistence\\DatabaseInitializer.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAuwBwAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-11T01:16:37.602Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-11T01:16:37.602Z"
             },
             {
               "$type": "Document",
@@ -100,8 +98,7 @@
               "RelativeToolTip": "src\\AcademicRegistration.Infrastructure\\Persistence\\CatalogSeedData.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAABMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-11T01:16:07.084Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-11T01:16:07.084Z"
             },
             {
               "$type": "Document",
@@ -113,8 +110,7 @@
               "RelativeToolTip": "src\\AcademicRegistration.Domain\\ValueObjects\\SubjectCode.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-11T01:15:18.606Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-11T01:15:18.606Z"
             },
             {
               "$type": "Document",
@@ -126,8 +122,7 @@
               "RelativeToolTip": "src\\AcademicRegistration.Domain\\ValueObjects\\StudentName.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-11T01:14:22.689Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-11T01:14:22.689Z"
             },
             {
               "$type": "Document",
@@ -139,8 +134,7 @@
               "RelativeToolTip": "src\\AcademicRegistration.Domain\\ValueObjects\\EmailAddress.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABwAAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-11T01:05:49.662Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-11T01:05:49.662Z"
             },
             {
               "$type": "Document",
@@ -152,8 +146,7 @@
               "RelativeToolTip": "src\\AcademicRegistration.Domain\\ValueObjects\\DocumentNumber.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-11T01:05:43.813Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-11T01:05:43.813Z"
             },
             {
               "$type": "Document",
@@ -178,8 +171,7 @@
               "RelativeToolTip": "src\\AcademicRegistration.Api\\appsettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-07-11T00:46:47.84Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-11T00:46:47.84Z"
             },
             {
               "$type": "Document",
@@ -191,8 +183,7 @@
               "RelativeToolTip": "src\\AcademicRegistration.Gateway\\appsettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-07-11T00:43:41.694Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-11T00:43:41.694Z"
             }
           ]
         }

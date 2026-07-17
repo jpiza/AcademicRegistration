@@ -1,0 +1,30 @@
+# Reemplaza los placeholders antes de pegar en OCI IAM.
+
+# Admin que crea y opera el cluster Kafka.
+allow group <kafka_admin_group_name> to {
+  KAFKA_CLUSTER_INSPECT,
+  KAFKA_CLUSTER_READ,
+  KAFKA_CLUSTER_CREATE,
+  KAFKA_CLUSTER_DELETE,
+  KAFKA_CLUSTER_UPDATE,
+  KAFKA_CLUSTER_CONFIG_READ,
+  KAFKA_CLUSTER_CONFIG_INSPECT,
+  KAFKA_CLUSTER_CONFIG_CREATE,
+  KAFKA_CLUSTER_CONFIG_UPDATE,
+  KAFKA_CLUSTER_CONFIG_DELETE
+} in compartment <kafka_compartment_name>
+
+# Permisos del servicio OCI Streaming with Apache Kafka para crear VNICs/endpoints.
+allow service rawfka to use vnics in compartment <network_compartment_name>
+allow service rawfka to use network-security-groups in compartment <network_compartment_name>
+allow service rawfka to use subnets in compartment <network_compartment_name>
+
+# Requerido si usas SASL/SCRAM con un secret en OCI Vault.
+allow service rawfka to read secrets in compartment <secret_compartment_name>
+allow service rawfka to {SECRET_UPDATE} in compartment <secret_compartment_name>
+allow service rawfka to use secrets in compartment <secret_compartment_name> where request.operation = 'UpdateSecret'
+
+# Opcional: si el operador tambien debe crear/rotar secrets manuales.
+allow group <kafka_admin_group_name> to manage vaults in compartment <secret_compartment_name>
+allow group <kafka_admin_group_name> to manage keys in compartment <secret_compartment_name>
+allow group <kafka_admin_group_name> to manage secrets in compartment <secret_compartment_name>

@@ -2,10 +2,10 @@
 
 Este piloto separa el frontend del cluster OKE:
 
-- El backend, gateway, datastores y worker siguen ejecutandose en Kubernetes.
+- El backend, datastores y worker siguen ejecutandose en Kubernetes.
 - El SPA Angular se compila como archivos estaticos.
 - Los archivos se publican en un bucket publico de OCI Object Storage.
-- El SPA consume el gateway publico expuesto por Ingress NGINX.
+- El SPA consume el API publico expuesto directamente por Ingress NGINX.
 
 ## Arquitectura del piloto
 
@@ -18,16 +18,17 @@ OCI Object Storage bucket
   |
   | HTTPS API calls
   v
-https://gateway.157.137.225.220.sslip.io/api
+https://api.157.137.225.220.sslip.io/api
   |
   v
-OKE Ingress NGINX -> gateway:5080 -> api:5081
+OKE Ingress NGINX -> api:5081
 ```
 
-El frontend de Kubernetes puede seguir desplegado mientras haces la prueba. Esto permite comparar:
+El frontend de Kubernetes puede seguir desplegado mientras haces la prueba. Para la PoC simplificada, se apaga con:
 
-- Front actual en OKE: `https://academic.157.137.225.220.sslip.io`
-- Front piloto en Object Storage: URL que imprime el script al terminar
+```powershell
+kubectl apply -f k8s\oci\manifests\99-disable-frontend-gateway.yaml
+```
 
 ## Cambio aplicado al frontend
 
@@ -43,7 +44,7 @@ Para el piloto, el script sobrescribe ese archivo en el `dist` con:
 
 ```json
 {
-  "apiBaseUrl": "https://gateway.157.137.225.220.sslip.io/api"
+  "apiBaseUrl": "https://api.157.137.225.220.sslip.io/api"
 }
 ```
 
@@ -57,17 +58,17 @@ Desde la raiz del repositorio:
 .\k8s\oci\scripts\deploy-frontend-object-storage.ps1 `
   -Region sa-bogota-1 `
   -BucketName academic-registration-spa-pilot `
-  -GatewayBaseUrl https://gateway.157.137.225.220.sslip.io/api `
+  -ApiBaseUrl https://api.157.137.225.220.sslip.io/api `
   -UpdateK8sCors
 ```
 
 El script hace lo siguiente:
 
 1. Ejecuta `npm run build -- --base-href ./` en `frontend`.
-2. Escribe `dist/academic-registration-web/browser/app-config.json` con la URL del gateway.
+2. Escribe `dist/academic-registration-web/browser/app-config.json` con la URL del API.
 3. Crea o actualiza el bucket con `ObjectReadWithoutList`.
 4. Sube cada archivo con `Content-Type` correcto para HTML, JS, CSS, JSON, imagenes y fuentes.
-5. Si usas `-UpdateK8sCors`, agrega el origen de Object Storage al ConfigMap y reinicia `gateway` y `api`.
+5. Si usas `-UpdateK8sCors`, agrega el origen de Object Storage al ConfigMap y reinicia el API. Si el gateway sigue activo en otro ambiente, tambien intenta reiniciarlo.
 
 La URL final queda con este formato:
 
@@ -77,7 +78,7 @@ https://objectstorage.sa-bogota-1.oraclecloud.com/n/<namespace>/b/academic-regis
 
 ## CORS
 
-Como el navegador servira el SPA desde Object Storage y llamara al gateway en OKE, el gateway debe permitir el origen del frontend.
+Como el navegador servira el SPA desde Object Storage y llamara al API en OKE, el API debe permitir el origen del frontend.
 
 Para la URL path-style de Object Storage, el origen del navegador es:
 
@@ -90,24 +91,24 @@ El script lo puede agregar automaticamente con `-UpdateK8sCors`. Si usas un domi
 ```powershell
 .\k8s\oci\scripts\deploy-frontend-object-storage.ps1 `
   -BucketName academic-registration-spa-pilot `
-  -GatewayBaseUrl https://gateway.157.137.225.220.sslip.io/api `
+  -ApiBaseUrl https://api.157.137.225.220.sslip.io/api `
   -CorsOrigin https://academic.example.com `
   -UpdateK8sCors
 ```
 
 ## Validacion
 
-Verifica primero el gateway:
+Verifica primero el API:
 
 ```powershell
-curl.exe -i https://gateway.157.137.225.220.sslip.io/health
+curl.exe -i https://api.157.137.225.220.sslip.io/health
 ```
 
 Luego abre la URL del Object Storage que imprime el script. En DevTools > Network deberias ver:
 
 - `index.html`, `main-*.js`, `styles-*.css` servidos desde Object Storage.
-- `app-config.json` servido desde Object Storage con `apiBaseUrl` apuntando al gateway.
-- Requests a `https://gateway.157.137.225.220.sslip.io/api/subjects` y `/api/students`.
+- `app-config.json` servido desde Object Storage con `apiBaseUrl` apuntando al API.
+- Requests a `https://api.157.137.225.220.sslip.io/api/subjects` y `/api/students`.
 
 ## Limitaciones del piloto
 

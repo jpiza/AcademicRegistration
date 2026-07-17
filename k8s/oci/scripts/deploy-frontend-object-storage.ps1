@@ -1,7 +1,8 @@
 param(
   [string]$Region = "sa-bogota-1",
   [string]$BucketName = "academic-registration-spa-pilot",
-  [string]$GatewayBaseUrl = "https://gateway.157.137.225.220.sslip.io/api",
+  [string]$ApiBaseUrl = "https://api.157.137.225.220.sslip.io/api",
+  [string]$GatewayBaseUrl = "",
   [string]$CompartmentId = "",
   [string]$Auth = "security_token",
   [string]$OciCliPath = "C:\o\Scripts\oci.exe",
@@ -91,6 +92,11 @@ if (-not $CompartmentId) {
   $CompartmentId = Get-DefaultCompartmentId
 }
 
+if ($GatewayBaseUrl) {
+  Write-Warning "-GatewayBaseUrl is deprecated. Use -ApiBaseUrl instead."
+  $ApiBaseUrl = $GatewayBaseUrl
+}
+
 if (-not $SkipBuild) {
   Push-Location $FrontendDir
   try {
@@ -111,7 +117,7 @@ if (-not (Test-Path -LiteralPath $DistDir)) {
 $appConfigPath = Join-Path $DistDir "app-config.json"
 $utf8NoBom = New-Object System.Text.UTF8Encoding $false
 $appConfigJson = @{
-  apiBaseUrl = $GatewayBaseUrl.TrimEnd("/")
+  apiBaseUrl = $ApiBaseUrl.TrimEnd("/")
 } | ConvertTo-Json -Depth 5
 [System.IO.File]::WriteAllText($appConfigPath, $appConfigJson + [Environment]::NewLine, $utf8NoBom)
 
@@ -186,7 +192,7 @@ if ($UpdateK8sCors) {
   if ($LASTEXITCODE -ne 0) { throw "Failed to update ConfigMap CORS origin." }
 
   kubectl rollout restart deployment/gateway -n $K8sNamespace
-  if ($LASTEXITCODE -ne 0) { throw "Failed to restart gateway deployment." }
+  if ($LASTEXITCODE -ne 0) { Write-Warning "Gateway deployment was not restarted. It may be disabled in the simplified PoC." }
 
   kubectl rollout restart deployment/api -n $K8sNamespace
   if ($LASTEXITCODE -ne 0) { throw "Failed to restart api deployment." }
@@ -198,7 +204,7 @@ Write-Host "SPA published to:"
 Write-Host $indexUrl
 Write-Host ""
 Write-Host "Runtime API config:"
-Write-Host "  apiBaseUrl = $($GatewayBaseUrl.TrimEnd('/'))"
+Write-Host "  apiBaseUrl = $($ApiBaseUrl.TrimEnd('/'))"
 Write-Host ""
-Write-Host "CORS origin to allow in gateway/API:"
+Write-Host "CORS origin to allow in API:"
 Write-Host "  $CorsOrigin"

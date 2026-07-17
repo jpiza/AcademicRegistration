@@ -90,6 +90,8 @@ public static class DependencyInjection
                 ClientId = "academic-registration-api"
             };
 
+            ApplyKafkaSecurity(config, settings);
+
             return new ProducerBuilder<string, string>(config).Build();
         });
 
@@ -97,6 +99,61 @@ public static class DependencyInjection
         services.AddSingleton<IOutboxMessagePublisher, KafkaEventBus>();
 
         return services;
+    }
+
+    private static void ApplyKafkaSecurity(ClientConfig config, KafkaSettings settings)
+    {
+        if (string.IsNullOrWhiteSpace(settings.SecurityProtocol))
+        {
+            return;
+        }
+
+        config.SecurityProtocol = ParseKafkaEnum<SecurityProtocol>(
+            settings.SecurityProtocol,
+            nameof(settings.SecurityProtocol));
+
+        if (config.SecurityProtocol is not (SecurityProtocol.SaslSsl or SecurityProtocol.SaslPlaintext))
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(settings.SaslMechanism))
+        {
+            throw new InvalidOperationException("Kafka SaslMechanism is required when SecurityProtocol uses SASL.");
+        }
+
+        if (string.IsNullOrWhiteSpace(settings.SaslUsername))
+        {
+            throw new InvalidOperationException("Kafka SaslUsername is required when SecurityProtocol uses SASL.");
+        }
+
+        if (string.IsNullOrWhiteSpace(settings.SaslPassword))
+        {
+            throw new InvalidOperationException("Kafka SaslPassword is required when SecurityProtocol uses SASL.");
+        }
+
+        config.SaslMechanism = ParseKafkaEnum<SaslMechanism>(
+            settings.SaslMechanism,
+            nameof(settings.SaslMechanism));
+        config.SaslUsername = settings.SaslUsername;
+        config.SaslPassword = settings.SaslPassword;
+    }
+
+    private static TEnum ParseKafkaEnum<TEnum>(string value, string settingName)
+        where TEnum : struct, Enum
+    {
+        var normalized = value
+            .Replace("-", string.Empty)
+            .Replace("_", string.Empty)
+            .Replace(".", string.Empty)
+            .Replace(" ", string.Empty);
+
+        if (Enum.TryParse<TEnum>(normalized, ignoreCase: true, out var parsed))
+        {
+            return parsed;
+        }
+
+        throw new InvalidOperationException($"Kafka {settingName} value '{value}' is not supported.");
     }
 
     private static IServiceCollection AddOutbox(
