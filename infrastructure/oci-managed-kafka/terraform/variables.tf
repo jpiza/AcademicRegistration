@@ -65,9 +65,9 @@ variable "coordination_type" {
 }
 
 variable "broker_node_count" {
-  description = "Number of Kafka brokers. Use 3 for production-like PoC; use 1 only for connectivity/cost checks."
+  description = "Number of Kafka brokers. OCI Streaming with Apache Kafka is not Always Free; use 1 only for minimum-cost connectivity checks."
   type        = number
-  default     = 3
+  default     = 1
 
   validation {
     condition     = var.broker_node_count >= 1 && var.broker_node_count <= 30
@@ -87,15 +87,15 @@ variable "broker_ocpu_count" {
 }
 
 variable "broker_node_shape" {
-  description = "Broker compute shape."
+  description = "Broker compute shape. VM.Standard.A1.Flex is the lowest-cost default, but the managed Kafka service is still billable."
   type        = string
-  default     = "VM.Standard.E5.Flex"
+  default     = "VM.Standard.A1.Flex"
 }
 
 variable "broker_storage_size_in_gbs" {
-  description = "Block volume storage per broker."
+  description = "Block volume storage per broker. Use the 50 GB service minimum for minimum-cost PoCs."
   type        = number
-  default     = 150
+  default     = 50
 
   validation {
     condition     = var.broker_storage_size_in_gbs >= 50 && var.broker_storage_size_in_gbs <= 16000

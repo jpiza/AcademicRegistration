@@ -7,6 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AWSXRayRecorder.Core" Version="2.*" />
+    <PackageReference Include="AWSXRayRecorder.Handlers.AspNetCore" Version="2.*" />
+    <PackageReference Include="AWSXRayRecorder.Handlers.AwsSdk" Version="2.*" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

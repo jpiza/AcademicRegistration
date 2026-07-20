@@ -3,8 +3,16 @@ using AcademicRegistration.Api.Middlewares;
 using AcademicRegistration.Application;
 using AcademicRegistration.Infrastructure;
 using AcademicRegistration.Infrastructure.Persistence;
+using Amazon.XRay.Recorder.Core;
+using Amazon.XRay.Recorder.Handlers.AwsSdk;
 
 var builder = WebApplication.CreateBuilder(args);
+
+if (builder.Configuration.GetValue("Tracing:XRay:Enabled", false))
+{
+    AWSXRayRecorder.InitializeInstance(builder.Configuration);
+    AWSSDKHandler.RegisterXRayForAllServices();
+}
 
 builder.Services
     .AddApplication()
@@ -39,9 +47,19 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+
+if (app.Environment.IsDevelopment() ||
+    app.Configuration.GetValue("Database:ApplyMigrationsOnStartup", false))
+{
     app.ApplyMigrations();
 
     await app.Services.InitializeAcademicRegistrationDatabaseAsync();
+}
+
+if (app.Configuration.GetValue("Tracing:XRay:Enabled", false))
+{
+    app.UseXRay("AcademicRegistration.Api");
 }
 
 app.UseHttpsRedirection();

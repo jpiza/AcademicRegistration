@@ -1,0 +1,36 @@
+project_name = "academic-registration"
+environment  = "poc"
+aws_region   = "us-east-1"
+
+access_key = "replace-with-access-key"
+secret_key = "replace-with-secret-key"
+
+image_tag = "latest"
+
+api_desired_count     = 1
+gateway_desired_count = 1
+worker_desired_count  = 1
+
+db_engine         = "mysql"
+db_instance_class = "db.t3.micro"
+db_storage_type   = "gp2"
+
+email_enabled = false
+smtp_from     = "no-reply@academic-registration.local"
+smtp_host     = ""
+smtp_username = ""
+smtp_password = "replace-me"
+
+enable_waf  = false
+enable_xray = true
+
+# Para restringir acceso publico con WAF:
+# 1. Cambia enable_waf a true.
+# 2. Deja attach_waf_to_cloudfront en true.
+# 3. Cambia enable_waf_ip_allowlist a true.
+# 4. Agrega tus IPs publicas en formato CIDR. Usa /32 para una IP individual.
+# 5. Usa restrict_alb_to_cloudfront para evitar saltarse WAF por el DNS directo del ALB.
+attach_waf_to_cloudfront  = true
+enable_waf_ip_allowlist    = false
+waf_allowed_ipv4_cidrs     = ["203.0.113.10/32"]
+restrict_alb_to_cloudfront = false

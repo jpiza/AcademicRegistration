@@ -1,8 +1,8 @@
-using AcademicRegistration.Infrastructure.Messaging;
+using AcademicRegistration.Application.Abstractions.Events;
 
 namespace AcademicRegistration.Infrastructure.Outbox;
 
 public interface IOutboxMessagePublisher
 {
-    Task<KafkaEventMetadata> PublishAsync(OutboxMessage message, CancellationToken cancellationToken);
+    Task<EventPublishResult> PublishAsync(OutboxMessage message, CancellationToken cancellationToken);
 }

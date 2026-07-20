@@ -19,6 +19,17 @@ Recursos OCI:
 - OCIR private repositories.
 - LoadBalancer publico creado por `ingress-nginx`.
 
+## Guardrails de costo / Always Free
+
+Para que este despliegue se mantenga dentro de Always Free, valida estos puntos antes de crear o actualizar recursos:
+
+- OKE debe ser `BASIC_CLUSTER`; los clusters Enhanced agregan tarifa de control plane.
+- El node pool debe usar `VM.Standard.A1.Flex` en la home region, con maximo total de `2 OCPU` y `12 GB` de memoria para tenancies Always Free.
+- El LoadBalancer publico debe quedarse en `flexible` con minimo y maximo `10 Mbps`.
+- Boot volumes + block volumes deben sumar como maximo `200 GB` en la home region.
+- Object Storage/OCIR deben mantenerse dentro del cupo Always Free de Object Storage.
+- OCI Streaming with Apache Kafka no es Always Free. Para costo cero, usa el Kafka in-cluster de `04-datastores.yaml` y no apliques `99-disable-incluster-kafka.yaml`.
+
 Recursos Kubernetes:
 
 - Namespace `academic-registration`.
@@ -165,10 +176,16 @@ La arquitectura importa para las imagenes:
 - Node pool Ampere A1: `linux/arm64`.
 - Node pool x86: `linux/amd64`.
 
-En el despliegue actual el pool operativo es `amd64`, por eso las imagenes finales se compilaron con:
+Si mantienes un pool x86, compila con:
 
 ```text
 linux/amd64
+```
+
+Si usas el default Always Free Ampere A1, compila con:
+
+```text
+linux/arm64
 ```
 
 ## 5. Crear repositorios OCIR
@@ -668,7 +685,14 @@ Para borrar Ingress NGINX:
 kubectl delete namespace ingress-nginx
 ```
 
-Para borrar recursos OCI como OKE, VCN, subnets, repos OCIR o LoadBalancers, hazlo con cuidado desde la consola OCI o con CLI, revisando costos y dependencias antes de eliminar.
+Para cortar costos de recursos pagados, revisa especialmente:
+
+- Node pools que no sean `VM.Standard.A1.Flex` dentro de `2 OCPU / 12 GB`.
+- Clusters de OCI Streaming with Apache Kafka.
+- LoadBalancers por encima de `10 Mbps` o balanceadores adicionales.
+- Block/boot volumes por encima de `200 GB` combinados.
+
+Borra recursos OCI como OKE, VCN, subnets, repos OCIR, Kafka gestionado o LoadBalancers con cuidado desde la consola OCI o con CLI, revisando dependencias antes de eliminar.
 
 ## Variante: SPA en Object Storage
 

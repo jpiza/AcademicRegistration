@@ -7,7 +7,8 @@ using AcademicRegistration.Infrastructure.Outbox;
 using AcademicRegistration.Infrastructure.Persistence;
 using AcademicRegistration.Infrastructure.Persistence.Configurations;
 using AcademicRegistration.Infrastructure.Persistence.Repositories;
-using Confluent.Kafka;
+using Amazon;
+using Amazon.EventBridge;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +24,7 @@ public static class DependencyInjection
                      ?? throw new Exception("Configuracion section is missing");
 
         services.Configure<Configuration>(configuration.GetSection("Configuracion"));
-        services.AddKafka(configuration);
+        services.AddEventBridge(configuration);
         services.AddOutbox(configuration);
 
         services.AddDbContext<AcademicRegistrationDbContext>(options =>
@@ -58,102 +59,47 @@ public static class DependencyInjection
         return services;
     }
 
-    private static IServiceCollection AddKafka(
+    private static IServiceCollection AddEventBridge(
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddOptions<KafkaSettings>()
-            .Bind(configuration.GetSection("Kafka"))
+        services.AddOptions<EventBridgeSettings>()
+            .Bind(configuration.GetSection("EventBridge"))
             .Validate(
-                settings => !string.IsNullOrWhiteSpace(settings.BootstrapServers),
-                "Kafka BootstrapServers is required")
+                settings => !string.IsNullOrWhiteSpace(settings.EventBusName),
+                "EventBridge EventBusName is required")
             .Validate(
-                settings => !string.IsNullOrWhiteSpace(settings.Topic),
-                "Kafka Topic is required")
+                settings => !string.IsNullOrWhiteSpace(settings.Source),
+                "EventBridge Source is required")
+            .Validate(
+                settings => !string.IsNullOrWhiteSpace(settings.Region),
+                "EventBridge Region is required")
             .ValidateOnStart();
 
-        services.AddSingleton<IProducer<string, string>>(sp =>
+        services.AddSingleton<IAmazonEventBridge>(sp =>
         {
             var settings = sp
-                .GetRequiredService<IOptions<KafkaSettings>>()
+                .GetRequiredService<IOptions<EventBridgeSettings>>()
                 .Value;
 
-            var config = new ProducerConfig
+            var config = new AmazonEventBridgeConfig
             {
-                BootstrapServers = settings.BootstrapServers,
-                Acks = Acks.All,
-                EnableIdempotence = true,
-                MessageSendMaxRetries = 3,
-                RetryBackoffMs = 1000,
-                CompressionType = CompressionType.Snappy,
-                AllowAutoCreateTopics = true,
-                ClientId = "academic-registration-api"
+                RegionEndpoint = RegionEndpoint.GetBySystemName(settings.Region)
             };
 
-            ApplyKafkaSecurity(config, settings);
+            if (!string.IsNullOrWhiteSpace(settings.ServiceUrl))
+            {
+                config.ServiceURL = settings.ServiceUrl;
+                config.AuthenticationRegion = settings.Region;
+            }
 
-            return new ProducerBuilder<string, string>(config).Build();
+            return new AmazonEventBridgeClient(config);
         });
 
         services.AddScoped<IEventBus, OutboxEventBus>();
-        services.AddSingleton<IOutboxMessagePublisher, KafkaEventBus>();
+        services.AddSingleton<IOutboxMessagePublisher, EventBridgeEventBus>();
 
         return services;
-    }
-
-    private static void ApplyKafkaSecurity(ClientConfig config, KafkaSettings settings)
-    {
-        if (string.IsNullOrWhiteSpace(settings.SecurityProtocol))
-        {
-            return;
-        }
-
-        config.SecurityProtocol = ParseKafkaEnum<SecurityProtocol>(
-            settings.SecurityProtocol,
-            nameof(settings.SecurityProtocol));
-
-        if (config.SecurityProtocol is not (SecurityProtocol.SaslSsl or SecurityProtocol.SaslPlaintext))
-        {
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(settings.SaslMechanism))
-        {
-            throw new InvalidOperationException("Kafka SaslMechanism is required when SecurityProtocol uses SASL.");
-        }
-
-        if (string.IsNullOrWhiteSpace(settings.SaslUsername))
-        {
-            throw new InvalidOperationException("Kafka SaslUsername is required when SecurityProtocol uses SASL.");
-        }
-
-        if (string.IsNullOrWhiteSpace(settings.SaslPassword))
-        {
-            throw new InvalidOperationException("Kafka SaslPassword is required when SecurityProtocol uses SASL.");
-        }
-
-        config.SaslMechanism = ParseKafkaEnum<SaslMechanism>(
-            settings.SaslMechanism,
-            nameof(settings.SaslMechanism));
-        config.SaslUsername = settings.SaslUsername;
-        config.SaslPassword = settings.SaslPassword;
-    }
-
-    private static TEnum ParseKafkaEnum<TEnum>(string value, string settingName)
-        where TEnum : struct, Enum
-    {
-        var normalized = value
-            .Replace("-", string.Empty)
-            .Replace("_", string.Empty)
-            .Replace(".", string.Empty)
-            .Replace(" ", string.Empty);
-
-        if (Enum.TryParse<TEnum>(normalized, ignoreCase: true, out var parsed))
-        {
-            return parsed;
-        }
-
-        throw new InvalidOperationException($"Kafka {settingName} value '{value}' is not supported.");
     }
 
     private static IServiceCollection AddOutbox(

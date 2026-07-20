@@ -9,9 +9,9 @@ data:
   ASPNETCORE_ENVIRONMENT: Development
   DOTNET_ENVIRONMENT: Development
   Configuracion__Conexion: MySQL
-  Kafka__BootstrapServers: bootstrap-clstr-ufx2qi2chn08ohq4.kafka.sa-bogota-1.oci.oraclecloud.com:9092
-  Kafka__SecurityProtocol: SaslSsl
-  Kafka__SaslMechanism: ScramSha512
+  Kafka__BootstrapServers: kafka:29092
+  Kafka__SecurityProtocol: Plaintext
+  Kafka__SaslMechanism: ""
   Kafka__Topic: academic-registration-events
   Kafka__GroupId: academic-registration-notifications
   Outbox__BatchSize: "20"

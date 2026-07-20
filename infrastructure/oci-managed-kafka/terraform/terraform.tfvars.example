@@ -16,8 +16,8 @@ coordination_type = "ZOOKEEPER"
 
 broker_node_count           = 1
 broker_ocpu_count           = 1
-broker_node_shape           = "VM.Standard.E5.Flex"
-broker_storage_size_in_gbs  = 150
+broker_node_shape           = "VM.Standard.A1.Flex"
+broker_storage_size_in_gbs  = 50
 auto_create_topics_enable   = false
 allow_everyone_if_no_acl_found = true
 

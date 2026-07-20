@@ -74,7 +74,7 @@ public sealed class OutboxMessageProcessor : BackgroundService
                 message.MarkAsProcessed();
 
                 _logger.LogInformation(
-                    "Mensaje outbox {MessageId} publicado en Kafka: {KafkaResult}",
+                    "Mensaje outbox {MessageId} publicado en EventBridge: {PublishResult}",
                     message.Id,
                     result.Id);
             }

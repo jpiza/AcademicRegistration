@@ -90,7 +90,21 @@ Invoke-CheckedCommand {
     -o yaml | kubectl apply -f -
 }
 
-Invoke-CheckedCommand { kubectl apply -f $ManifestDir }
+$BaseManifests = @(
+  "01-configmap.yaml",
+  "03-storage.yaml",
+  "04-datastores.yaml",
+  "05-api.yaml",
+  "06-notifications-worker.yaml",
+  "07-gateway.yaml",
+  "08-frontend.yaml",
+  "10-letsencrypt-clusterissuer.yaml",
+  "09-routes.yaml"
+)
+
+foreach ($manifest in $BaseManifests) {
+  Invoke-CheckedCommand { kubectl apply -f (Join-Path $ManifestDir $manifest) }
+}
 
 Invoke-CheckedCommand {
   kubectl set image deployment/api api="$ImagePrefix/api:$Tag" -n $Namespace

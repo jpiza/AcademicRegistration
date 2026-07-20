@@ -22,7 +22,7 @@ Solucion para la prueba tecnica de registro de estudiantes.
 - `backend/src/AcademicRegistration.Infrastructure.Migrations.SqlServer`: migraciones EF Core para SQL Server.
 - `backend/src/AcademicRegistration.Api`: API REST con controllers y manejo de errores.
 - `backend/src/AcademicRegistration.Gateway`: API gateway con YARP hacia el API.
-- `backend/src/AcademicRegistration.Notifications.Worker`: consumidor Kafka para notificaciones por correo.
+- `backend/src/AcademicRegistration.Notifications.Worker`: consumidor SQS para notificaciones por correo.
 - `frontend`: Angular 22 standalone/zoneless con signals.
 - `database`: scripts SQL Server y MySQL.
 
@@ -54,22 +54,24 @@ URLs por defecto:
 
 El agregado `Student` levanta `StudentRegisteredEvent` al registrar un estudiante y `StudentEnrollmentChangedEvent` al actualizar su seleccion de materias. La capa Application los traduce a `StudentNotificationRequestedIntegrationEvent`.
 
-Para mantener consistencia entre la base de datos y Kafka, el API usa el patron transactional outbox:
+Para mantener consistencia entre la base de datos y EventBridge, el API usa el patron transactional outbox:
 
 1. El comando modifica el estudiante y levanta eventos de dominio.
 2. Antes de guardar, MediatR maneja esos eventos y `IEventBus` inserta el mensaje en `OutboxMessages`.
 3. `Students`, `StudentSubjects` y `OutboxMessages` se guardan en la misma transaccion de EF Core.
-4. `OutboxMessageProcessor` lee mensajes pendientes, los publica en Kafka y marca `ProcessedOnUtc`.
-5. Si Kafka falla, el mensaje queda con `Error` y `RetryCount` para reintento.
+4. `OutboxMessageProcessor` lee mensajes pendientes, los publica en EventBridge y marca `ProcessedOnUtc`.
+5. Si EventBridge falla, el mensaje queda con `Error` y `RetryCount` para reintento.
 
-Esto evita perder mensajes cuando la base de datos confirma el cambio pero Kafka no esta disponible. La contraparte es que Kafka puede recibir un duplicado si el API publica y se cae antes de marcar el outbox como procesado; por eso los consumidores deben tratar `eventId` como llave de idempotencia.
+Esto evita perder mensajes cuando la base de datos confirma el cambio pero EventBridge no esta disponible. La contraparte es que EventBridge/SQS pueden entregar duplicados si el API publica y se cae antes de marcar el outbox como procesado; por eso los consumidores deben tratar `eventId` como llave de idempotencia.
 
-La configuracion Kafka del publicador esta en:
+La configuracion EventBridge del publicador esta en:
 
 ```json
-"Kafka": {
-  "BootstrapServers": "localhost:9092",
-  "Topic": "academic-registration-events"
+"EventBridge": {
+  "EventBusName": "academic-registration",
+  "Source": "academic-registration.api",
+  "Region": "us-east-1",
+  "ServiceUrl": "http://localhost:4566"
 }
 ```
 
@@ -85,7 +87,20 @@ El procesador outbox se controla con:
 
 `MaxRetries = 0` significa reintentos indefinidos.
 
-El worker `AcademicRegistration.Notifications.Worker` consume ese topico con el grupo `academic-registration-notifications` y envia la notificacion por correo. Por defecto `Email:Enabled` es `false`, asi que el correo se simula en logs; para envio real configura SMTP con `Email__Enabled=true`, `Email__Host`, `Email__Port`, `Email__From`, `Email__UserName` y `Email__Password`.
+El worker `AcademicRegistration.Notifications.Worker` consume la cola SQS `academic-registration-notifications` y envia la notificacion por correo. Por defecto `Email:Enabled` es `false`, asi que el correo se simula en logs; para envio real configura SMTP con `Email__Enabled=true`, `Email__Host`, `Email__Port`, `Email__From`, `Email__UserName` y `Email__Password`.
+
+La configuracion SQS del worker esta en:
+
+```json
+"Sqs": {
+  "QueueUrl": "http://localhost:4566/000000000000/academic-registration-notifications",
+  "Region": "us-east-1",
+  "ServiceUrl": "http://localhost:4566",
+  "MaxNumberOfMessages": 10,
+  "WaitTimeSeconds": 20,
+  "VisibilityTimeoutSeconds": 30
+}
+```
 
 Para Gmail, usa una contrasena de aplicacion, no la contrasena normal de la cuenta:
 
@@ -267,8 +282,8 @@ La configuracion Docker levanta seis servicios:
 - `gateway`: API Gateway YARP en `http://localhost:5080`.
 - `api`: API REST en `http://localhost:5081` y Swagger en `http://localhost:5081/swagger`.
 - `sqlserver`: SQL Server 2022 Express con volumen persistente.
-- `kafka`: broker Kafka local en `localhost:19092`.
-- `notifications-worker`: consumidor del topico `academic-registration-events` para enviar correos.
+- `localstack`: EventBridge y SQS locales en `http://localhost:4566`.
+- `notifications-worker`: consumidor de la cola `academic-registration-notifications` para enviar correos.
 
 Crear el archivo de entorno:
 
@@ -289,7 +304,7 @@ URLs principales:
 - API: `http://localhost:5081`
 - Swagger: `http://localhost:5081/swagger`
 - SQL Server: `localhost,1433`
-- Kafka: `localhost:19092`
+- LocalStack: `http://localhost:4566`
 
 Credenciales por defecto de SQL Server:
 
@@ -303,10 +318,27 @@ El servicio `api` corre con `ASPNETCORE_ENVIRONMENT=Development` y `Configuracio
 
 El servicio `notifications-worker` queda con `EMAIL_ENABLED=false` por defecto. Con ese valor, veras el contenido del correo en los logs del contenedor. Para enviar correos reales, actualiza las variables SMTP en `.env`. Si usas Gmail, `EMAIL_PASSWORD` debe ser una contrasena de aplicacion.
 
+LocalStack inicializa automaticamente:
+
+- Event bus `academic-registration`.
+- Cola `academic-registration-notifications`.
+- DLQ `academic-registration-notifications-dlq`.
+- Regla EventBridge que enruta `student.registered` y `student.enrollment.changed` hacia SQS.
+
 Para reiniciar tambien la base de datos:
 
 ```powershell
 docker compose down -v
 docker compose up --build
 ```
+
+## AWS PoC
+
+La POC AWS esta en `infrastructure/aws-poc`.
+
+- Terraform crea VPC, ALB, ECS Fargate, Cloud Map, RDS SQL Server, EventBridge, SQS + DLQ, Secrets Manager, KMS, CloudWatch, X-Ray daemon y frontend S3 + CloudFront.
+- GitHub Actions valida backend/frontend/Terraform y puede desplegar manualmente con `.github/workflows/aws-poc-ci-cd.yml`.
+- El frontend usa `/api`; CloudFront enruta `/api/*` al ALB y el gateway YARP enruta al API por Cloud Map.
+
+Ver detalles y pasos en `infrastructure/aws-poc/README.md`.
 

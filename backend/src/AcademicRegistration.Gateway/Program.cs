@@ -1,4 +1,11 @@
+using Amazon.XRay.Recorder.Core;
+
 var builder = WebApplication.CreateBuilder(args);
+
+if (builder.Configuration.GetValue("Tracing:XRay:Enabled", false))
+{
+    AWSXRayRecorder.InitializeInstance(builder.Configuration);
+}
 
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
@@ -19,6 +26,11 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+if (app.Configuration.GetValue("Tracing:XRay:Enabled", false))
+{
+    app.UseXRay("AcademicRegistration.Gateway");
+}
 
 app.UseCors("Frontend");
 

@@ -9,8 +9,8 @@ param(
   [string]$SubnetCidrBlock = "10.42.10.0/24",
   [string]$NodeSubnetCidrBlock = "10.42.20.0/24",
   [string]$NodeShape = "VM.Standard.A1.Flex",
-  [decimal]$NodeOcpus = 4,
-  [decimal]$NodeMemoryGb = 24,
+  [decimal]$NodeOcpus = 2,
+  [decimal]$NodeMemoryGb = 12,
   [int]$NodeCount = 1,
   [int]$NodeBootVolumeGb = 50
 )

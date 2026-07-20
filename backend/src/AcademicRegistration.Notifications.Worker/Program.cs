@@ -1,22 +1,31 @@
 using AcademicRegistration.Notifications.Worker.Configuration;
 using AcademicRegistration.Notifications.Worker.Email;
 using AcademicRegistration.Notifications.Worker.Messaging;
-using Confluent.Kafka;
+using Amazon;
+using Amazon.SQS;
+using Amazon.XRay.Recorder.Core;
+using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using Microsoft.Extensions.Options;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-builder.Services.AddOptions<KafkaConsumerSettings>()
-    .Bind(builder.Configuration.GetSection("Kafka"))
+builder.Services.AddOptions<SqsConsumerSettings>()
+    .Bind(builder.Configuration.GetSection("Sqs"))
     .Validate(
-        settings => !string.IsNullOrWhiteSpace(settings.BootstrapServers),
-        "Kafka BootstrapServers is required")
+        settings => !string.IsNullOrWhiteSpace(settings.QueueUrl),
+        "Sqs QueueUrl is required")
     .Validate(
-        settings => !string.IsNullOrWhiteSpace(settings.Topic),
-        "Kafka Topic is required")
+        settings => !string.IsNullOrWhiteSpace(settings.Region),
+        "Sqs Region is required")
     .Validate(
-        settings => !string.IsNullOrWhiteSpace(settings.GroupId),
-        "Kafka GroupId is required")
+        settings => settings.MaxNumberOfMessages is >= 1 and <= 10,
+        "Sqs MaxNumberOfMessages must be between 1 and 10")
+    .Validate(
+        settings => settings.WaitTimeSeconds is >= 0 and <= 20,
+        "Sqs WaitTimeSeconds must be between 0 and 20")
+    .Validate(
+        settings => settings.VisibilityTimeoutSeconds > 0,
+        "Sqs VisibilityTimeoutSeconds must be greater than zero")
     .ValidateOnStart();
 
 builder.Services.AddOptions<EmailSettings>()
@@ -29,83 +38,36 @@ builder.Services.AddOptions<EmailSettings>()
         "Email UserName and Password are required when Email Enabled and RequireAuthentication are true")
     .ValidateOnStart();
 
-builder.Services.AddSingleton<IConsumer<string, string>>(sp =>
+builder.Services.AddOptions<TracingSettings>()
+    .Bind(builder.Configuration.GetSection("Tracing:XRay"));
+
+if (builder.Configuration.GetValue("Tracing:XRay:Enabled", false))
+{
+    AWSXRayRecorder.InitializeInstance(builder.Configuration);
+    AWSSDKHandler.RegisterXRayForAllServices();
+}
+
+builder.Services.AddSingleton<IAmazonSQS>(sp =>
 {
     var settings = sp
-        .GetRequiredService<IOptions<KafkaConsumerSettings>>()
+        .GetRequiredService<IOptions<SqsConsumerSettings>>()
         .Value;
 
-    var config = new ConsumerConfig
+    var config = new AmazonSQSConfig
     {
-        BootstrapServers = settings.BootstrapServers,
-        GroupId = settings.GroupId,
-        AutoOffsetReset = AutoOffsetReset.Earliest,
-        EnableAutoCommit = false,
-        AllowAutoCreateTopics = true,
-        ClientId = "academic-registration-notifications-worker"
+        RegionEndpoint = RegionEndpoint.GetBySystemName(settings.Region)
     };
 
-    ApplyKafkaSecurity(config, settings);
+    if (!string.IsNullOrWhiteSpace(settings.ServiceUrl))
+    {
+        config.ServiceURL = settings.ServiceUrl;
+        config.AuthenticationRegion = settings.Region;
+    }
 
-    return new ConsumerBuilder<string, string>(config).Build();
+    return new AmazonSQSClient(config);
 });
 
 builder.Services.AddSingleton<IEmailSender, SmtpEmailSender>();
 builder.Services.AddHostedService<StudentNotificationConsumer>();
 
 await builder.Build().RunAsync();
-
-static void ApplyKafkaSecurity(ClientConfig config, KafkaConsumerSettings settings)
-{
-    if (string.IsNullOrWhiteSpace(settings.SecurityProtocol))
-    {
-        return;
-    }
-
-    config.SecurityProtocol = ParseKafkaEnum<SecurityProtocol>(
-        settings.SecurityProtocol,
-        nameof(settings.SecurityProtocol));
-
-    if (config.SecurityProtocol is not (SecurityProtocol.SaslSsl or SecurityProtocol.SaslPlaintext))
-    {
-        return;
-    }
-
-    if (string.IsNullOrWhiteSpace(settings.SaslMechanism))
-    {
-        throw new InvalidOperationException("Kafka SaslMechanism is required when SecurityProtocol uses SASL.");
-    }
-
-    if (string.IsNullOrWhiteSpace(settings.SaslUsername))
-    {
-        throw new InvalidOperationException("Kafka SaslUsername is required when SecurityProtocol uses SASL.");
-    }
-
-    if (string.IsNullOrWhiteSpace(settings.SaslPassword))
-    {
-        throw new InvalidOperationException("Kafka SaslPassword is required when SecurityProtocol uses SASL.");
-    }
-
-    config.SaslMechanism = ParseKafkaEnum<SaslMechanism>(
-        settings.SaslMechanism,
-        nameof(settings.SaslMechanism));
-    config.SaslUsername = settings.SaslUsername;
-    config.SaslPassword = settings.SaslPassword;
-}
-
-static TEnum ParseKafkaEnum<TEnum>(string value, string settingName)
-    where TEnum : struct, Enum
-{
-    var normalized = value
-        .Replace("-", string.Empty)
-        .Replace("_", string.Empty)
-        .Replace(".", string.Empty)
-        .Replace(" ", string.Empty);
-
-    if (Enum.TryParse<TEnum>(normalized, ignoreCase: true, out var parsed))
-    {
-        return parsed;
-    }
-
-    throw new InvalidOperationException($"Kafka {settingName} value '{value}' is not supported.");
-}

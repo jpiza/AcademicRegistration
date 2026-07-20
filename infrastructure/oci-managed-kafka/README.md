@@ -2,6 +2,8 @@
 
 Este paquete crea una prueba de concepto para mover integraciones asincronas desde Kafka en OKE hacia **OCI Streaming with Apache Kafka**, el servicio gestionado de Kafka en OCI.
 
+> Costo: OCI Streaming with Apache Kafka no forma parte de Always Free. Aunque uses `VM.Standard.A1.Flex`, el servicio cobra por infraestructura provisionada, storage y fee de servicio por OCPU. Para costo cero en esta PoC, usa Kafka in-cluster en OKE y elimina el cluster gestionado.
+
 Runbook especifico del proyecto:
 
 - `docs/terraform-and-deployment.md`
@@ -148,16 +150,17 @@ bootstrap TLS/mTLS   = "bootstrap-clstr-ufx2qi2chn08ohq4.kafka.sa-bogota-1.oci.o
 
 ## Sizing inicial sugerido
 
-Para PoC cercana a produccion:
+Para PoC de costo minimo, no gratis:
 
 - `cluster_type = "DEVELOPMENT"`
-- `broker_node_count = 3`
+- `broker_node_count = 1`
 - `broker_ocpu_count = 1`
-- `broker_storage_size_in_gbs = 150`
+- `broker_node_shape = "VM.Standard.A1.Flex"`
+- `broker_storage_size_in_gbs = 50`
 - `kafka_version = "3.9.1"`
 - `coordination_type = "KRAFT"`
 
-Si quieres minimizar costo para una prueba de conectividad, usa `broker_node_count = 1`; el Terraform ajusta replication factor e ISR a `1`.
+Para una PoC cercana a produccion, usa al menos tres brokers y aumenta storage segun la retencion requerida. El Terraform ajusta replication factor e ISR a `1` cuando `broker_node_count < 3`.
 
 ## Seguridad de la PoC
 
